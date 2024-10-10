@@ -39,11 +39,35 @@ library(tidyverse)
 # Problem 1
 ## Part a)
 ```{r part1a}
-sales %>% select(released) %>% mutate(str_remove(released, "(\\([A-Z]+\\))(\\[\\d+\\])"))
+sales_1a <- sales %>% mutate(released = mdy(str_remove(released, "(\\([A-Z]+\\))(\\[\\d+\\])")), country = fct_collapse(factor(country), "World" = c("World", "WW"), "FRA" = c("FRA", "FR")), sales = sales/1000000) %>% filter(country == "World" | country == "US" | country == "UK")
 
-str_subset(sales$released, "(\\([A-Z]+\\))(\\[\\d+\\])", negate = TRUE)
+sales_1a
 
 ```
+
+```{r part1b}
+sales_1b <- sales_1a %>% filter(country == "US") %>% mutate(years_since_release = floor((interval(released, Sys.Date()) / years(1)))) %>% group_by(artist)
+
+sales_1b %>% summarise(recent = min(years_since_release), oldest = max(years_since_release), median = median(years_since_release))
+
+```
+
+```{r part1c}
+sales_1c <- sales_1a %>% group_by(artist, country) %>% summarise(total = sum(sales))
+sales_1c
+
+library(extrafont)
+
+ggplot(sales_1c, aes(fill = country, y = total, x = artist)) + geom_bar(position = "fill", stat = "identity") + ylab("Percentage of Sales of Studio Albums (in millions)") + xlab("Artist") + labs(title = "Percentage of Sales of Taylor Swift and Beyoncé's Studio Albums by Country", subtitle = "World sales make up the highest percentage for both artists, followed by the US, then the UK") + guides(fill=guide_legend(title="Country")) + theme(plot.title = element_text(family = "Segoe UI Black", size = 16), axis.title.x = element_text(family = "Segoe UI Semilight"), axis.title.y = element_text(family = "Segoe UI Semilight"), plot.subtitle = element_text(family = "Segoe UI Semilight"), panel.background = element_rect(fill = "#fff1da"))
+
+```
+
+```{r part1d}
+
+
+```
+
+
 
 
 
