@@ -36,8 +36,8 @@ library(tidyverse)
 
 ```
 
-# Problem 1
-## Part a)
+## Problem 1
+### part a)
 ```{r part1a}
 sales_1a <- sales %>% mutate(released = mdy(str_remove(released, "(\\([A-Z]+\\))(\\[\\d+\\])")), country = fct_collapse(factor(country), "World" = c("World", "WW"), "FRA" = c("FRA", "FR")), sales = sales/1000000) %>% filter(country == "World" | country == "US" | country == "UK")
 
@@ -45,6 +45,8 @@ sales_1a
 
 ```
 
+
+### part b)
 ```{r part1b}
 sales_1b <- sales_1a %>% filter(country == "US") %>% mutate(years_since_release = floor((interval(released, Sys.Date()) / years(1)))) %>% group_by(artist)
 
@@ -52,6 +54,7 @@ sales_1b %>% summarise(recent = min(years_since_release), oldest = max(years_sin
 
 ```
 
+### part c)
 ```{r part1c}
 sales_1c <- sales_1a %>% group_by(artist, country) %>% summarise(total = sum(sales))
 sales_1c
@@ -62,12 +65,42 @@ ggplot(sales_1c, aes(fill = country, y = total, x = artist)) + geom_bar(position
 
 ```
 
-```{r part1d}
 
+### part d)
+```{r part1d}
+sales_1d <- sales_1a %>% filter(country == "World") %>% mutate(title = as.factor(title))
+
+ggplot(sales_1d, aes(x = sales, y = fct_reorder(title, sales), fill = artist)) + geom_bar(stat="identity") + xlab("Sales (in millions)") +
+  ylab("Album Title") + labs(title = "Taylor Swift and Beyoncé's Global World Sales, Sorted by Album", subtitle = "Taylor Swift's Fearless Tops Worldwide Sales, Followed by Beyoncé's Dangerously\nin Love") +
+  guides(fill=guide_legend(title="Artist")) +
+  theme(plot.title = element_text(family = "Segoe UI Black", size = 12), 
+        axis.title.x = element_text(family = "Segoe UI Semibold", size = 11), 
+        axis.title.y = element_text(family = "Segoe UI Semibold", size = 11), 
+        axis.text.x = element_text(family = "Segoe UI Semilight", size = 10), 
+        axis.text.y = element_text(family = "Segoe UI Semilight", size = 10), 
+        plot.subtitle = element_text(family = "Segoe UI Semilight"), 
+        panel.background = element_rect(fill = "#fff1da"),
+        legend.text = element_text(family = "Segoe UI Semilight", size = 10),
+        legend.title = element_text(family = "Segoe UI Semibold", size = 11))
 
 ```
 
+### part e)
+```{r part1e}
+ggplot(sales_1a, aes(x = released, y = sales, color = artist)) + geom_point() + facet_grid(vars(country), scales = "free_y") + xlab("Release Date") +
+  ylab("Sales (in millions)") + labs(title = "Taylor Swift and Beyoncé's Album Sales by Release Date, sorted by Country") + 
+  guides(color=guide_legend(title="Artist")) +
+  theme(plot.title = element_text(family = "Segoe UI Black", size = 12), 
+        axis.title.x = element_text(family = "Segoe UI Semibold", size = 11), 
+        axis.title.y = element_text(family = "Segoe UI Semibold", size = 11), 
+        axis.text.x = element_text(family = "Segoe UI Semilight", size = 10), 
+        axis.text.y = element_text(family = "Segoe UI Semilight", size = 10), 
+        plot.subtitle = element_text(family = "Segoe UI Semilight"), 
+        panel.background = element_rect(fill = "#fff1da"),
+        legend.text = element_text(family = "Segoe UI Semilight", size = 10),
+        legend.title = element_text(family = "Segoe UI Semibold", size = 11))
 
+```
 
 
 
