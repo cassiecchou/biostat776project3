@@ -88,7 +88,7 @@ ggplot(sales_1d, aes(x = sales, y = fct_reorder(title, sales), fill = artist)) +
 ### part e)
 ```{r part1e}
 ggplot(sales_1a, aes(x = released, y = sales, color = artist)) + geom_point() + facet_grid(vars(country), scales = "free_y") + xlab("Release Date") +
-  ylab("Sales (in millions)") + labs(title = "Taylor Swift and Beyoncé's Album Sales by Release Date, sorted by Country") + 
+  ylab("Sales (in millions)") + labs(title = "Taylor Swift and Beyoncé's Album Sales by Release Date, sorted by Country", subtitle = "Albums Sales Overall Decreasing in US, UK, and Worldwide") + 
   guides(color=guide_legend(title="Artist")) +
   theme(plot.title = element_text(family = "Segoe UI Black", size = 12), 
         axis.title.x = element_text(family = "Segoe UI Semibold", size = 11), 
