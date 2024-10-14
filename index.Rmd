@@ -96,9 +96,85 @@ ggplot(sales_1a, aes(x = released, y = sales, color = artist)) + geom_point() + 
         axis.text.x = element_text(family = "Segoe UI Semilight", size = 10), 
         axis.text.y = element_text(family = "Segoe UI Semilight", size = 10), 
         plot.subtitle = element_text(family = "Segoe UI Semilight"), 
-        panel.background = element_rect(fill = "#fff1da"),
+        panel.background = element_rect(fill = "#faf1e5"),
+        legend.text = element_text(family = "Segoe UI Semilight", size = 10),
+        legend.title = element_text(family = "Segoe UI Semibold", size = 11),
+        strip.background = element_rect(fill = "#dec3a4"))
+
+```
+
+
+## Problem 2
+### part a)
+```{r part2a}
+library(tidytext)
+
+ts_lines <- ts_lyrics %>% unnest_tokens(output = line, input = Lyrics, token = "lines")
+ts_hello <- ts_lines %>% filter(str_detect(line, "hello"))
+ts_hello
+ts_hello %>% count()
+ts_goodbye <- ts_lines %>% filter(str_detect(line, "goodbye"))
+ts_goodbye
+ts_goodbye %>% count()
+
+```
+There are 6 Taylor Swift lines with "hello" and 12 Taylor Swift lines with "goodbye".
+
+### part b)
+```{r part2b}
+b_hello <- b_lyrics %>% filter(str_detect(line, "hello"))
+b_hello
+b_hello %>% count()
+b_goodbye <- b_lyrics %>% filter(str_detect(line, "goodbye"))
+b_goodbye
+b_goodbye %>% count()
+
+```
+Beyoncé has 32 lines with the word "hello" and 12 lines with the word "goodbye".
+
+### part c)
+```{r part2c}
+library(wordcloud)
+b_words <- b_lyrics %>% unnest_tokens(output = word, input = line, token = "words")
+b_freq_words <- b_words %>% anti_join(stop_words) %>% count(word, sort = TRUE) %>% inner_join(get_sentiments("bing")) %>% head(25)
+b_freq_words
+
+ggplot(b_freq_words, aes(x = n, y = fct_reorder(word, n), fill = sentiment)) + geom_bar(stat="identity") +
+  xlab("Frequency of Word (Count)") + ylab("Word") + labs(title = "25 Most Frequently Used Words in Beyoncé's Songs and their Frequencies,\nColored by Sentiment", subtitle = "Beyoncé's most frequently used word is love, but she uses a mix of positive and negative words") +
+  guides(fill=guide_legend(title="Sentiment")) +
+  theme(plot.title = element_text(family = "Segoe UI Black", size = 12), 
+        axis.title.x = element_text(family = "Segoe UI Semibold", size = 11), 
+        axis.title.y = element_text(family = "Segoe UI Semibold", size = 11), 
+        axis.text.x = element_text(family = "Segoe UI Semilight", size = 10), 
+        axis.text.y = element_text(family = "Segoe UI Semilight", size = 10), 
+        plot.subtitle = element_text(family = "Segoe UI Semilight"), 
+        panel.background = element_rect(fill = "#faf1e5"),
         legend.text = element_text(family = "Segoe UI Semilight", size = 10),
         legend.title = element_text(family = "Segoe UI Semibold", size = 11))
+
+b_freq_words %>% with(wordcloud(word, n))
+```
+
+### part d)
+```{r part2d}
+ts_words <- ts_lines %>% unnest_tokens(output = word, input = line, token = "words")
+ts_freq_word <- ts_words %>% anti_join(stop_words) %>% count(word, sort = TRUE) %>% inner_join(get_sentiments("bing")) %>% head(25)
+ts_freq_word
+
+ggplot(ts_freq_word, aes(x = n, y = fct_reorder(word, n), fill = sentiment)) + geom_bar(stat="identity") +
+  xlab("Frequency of Word (Count)") + ylab("Word") + labs(title = "25 Most Frequently Used Words in Taylor Swift's Songs and their Frequencies,\nColored by Sentiment", subtitle = "Taylor Swift's most frequently used word is love, but she uses more negative than positive words") +
+  guides(fill=guide_legend(title="Sentiment")) +
+  theme(plot.title = element_text(family = "Segoe UI Black", size = 12), 
+        axis.title.x = element_text(family = "Segoe UI Semibold", size = 11), 
+        axis.title.y = element_text(family = "Segoe UI Semibold", size = 11), 
+        axis.text.x = element_text(family = "Segoe UI Semilight", size = 10), 
+        axis.text.y = element_text(family = "Segoe UI Semilight", size = 10), 
+        plot.subtitle = element_text(family = "Segoe UI Semilight"), 
+        panel.background = element_rect(fill = "#faf1e5"),
+        legend.text = element_text(family = "Segoe UI Semilight", size = 10),
+        legend.title = element_text(family = "Segoe UI Semibold", size = 11))
+
+ts_freq_word %>% with(wordcloud(word, n))
 
 ```
 
