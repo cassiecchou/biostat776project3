@@ -101,6 +101,20 @@ ggplot(sales_1a, aes(x = released, y = sales, color = artist)) + geom_point() + 
         legend.title = element_text(family = "Segoe UI Semibold", size = 11),
         strip.background = element_rect(fill = "#dec3a4"))
 
+ggplot(sales_1a, aes(x = released, y = sales, color = artist)) + geom_point() + facet_grid(vars(country)) + xlab("Release Date") +
+  ylab("Sales (in millions)") + labs(title = "Taylor Swift and Beyoncé's Album Sales by Release Date, sorted by Country", subtitle = "Albums Sales Overall Decreasing in US, UK, and Worldwide") + 
+  guides(color=guide_legend(title="Artist")) +
+  theme(plot.title = element_text(family = "Segoe UI Black", size = 12), 
+        axis.title.x = element_text(family = "Segoe UI Semibold", size = 11), 
+        axis.title.y = element_text(family = "Segoe UI Semibold", size = 11), 
+        axis.text.x = element_text(family = "Segoe UI Semilight", size = 10), 
+        axis.text.y = element_text(family = "Segoe UI Semilight", size = 10), 
+        plot.subtitle = element_text(family = "Segoe UI Semilight"), 
+        panel.background = element_rect(fill = "#faf1e5"),
+        legend.text = element_text(family = "Segoe UI Semilight", size = 10),
+        legend.title = element_text(family = "Segoe UI Semibold", size = 11),
+        strip.background = element_rect(fill = "#dec3a4"))
+
 ```
 
 
@@ -177,6 +191,16 @@ ggplot(ts_freq_word, aes(x = n, y = fct_reorder(word, n), fill = sentiment)) + g
 ts_freq_word %>% with(wordcloud(word, n))
 
 ```
+
+### part e)
+```{r part2e}
+
+
+
+
+```
+
+
 
 
 
