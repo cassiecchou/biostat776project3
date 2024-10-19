@@ -61,7 +61,7 @@ sales_1c
 
 library(extrafont)
 
-ggplot(sales_1c, aes(fill = country, y = total, x = artist)) + geom_bar(position = "fill", stat = "identity") + ylab("Percentage of Sales of Studio Albums (in millions)") + xlab("Artist") + labs(title = "Percentage of Sales of Taylor Swift and Beyoncé's Studio Albums by Country", subtitle = "World sales make up the highest percentage for both artists, followed by the US, then the UK") + guides(fill=guide_legend(title="Country")) + theme(plot.title = element_text(family = "Segoe UI Black", size = 16), axis.title.x = element_text(family = "Segoe UI Semilight"), axis.title.y = element_text(family = "Segoe UI Semilight"), plot.subtitle = element_text(family = "Segoe UI Semilight"), panel.background = element_rect(fill = "#fff1da"))
+ggplot(sales_1c, aes(fill = country, y = total, x = artist)) + geom_bar(position = "fill", stat = "identity") + ylab("Percentage of Sales (in millions) of Studio Albums") + xlab("Artist") + labs(title = "Percentage of Sales of Taylor Swift and Beyoncé's Studio Albums by Country", subtitle = "World sales make up the highest percentage for both artists, followed by the US, then the UK") + guides(fill=guide_legend(title="Country")) + theme(plot.title = element_text(family = "Segoe UI Black", size = 12), axis.title.x = element_text(family = "Segoe UI Semilight"), axis.title.y = element_text(family = "Segoe UI Semilight"), plot.subtitle = element_text(family = "Segoe UI Semilight"), panel.background = element_rect(fill = "#fff1da"))
 
 ```
 
@@ -88,7 +88,7 @@ ggplot(sales_1d, aes(x = sales, y = fct_reorder(title, sales), fill = artist)) +
 ### part e)
 ```{r part1e}
 ggplot(sales_1a, aes(x = released, y = sales, color = artist)) + geom_point() + facet_grid(vars(country), scales = "free_y") + xlab("Release Date") +
-  ylab("Sales (in millions)") + labs(title = "Taylor Swift and Beyoncé's Album Sales by Release Date, sorted by Country", subtitle = "Albums Sales Overall Decreasing in US, UK, and Worldwide") + 
+  ylab("Sales (in millions)") + labs(title = "Taylor Swift and Beyoncé's Album Sales by Release Date, sorted by Country", subtitle = "Country-Defined Axes Show that Albums Sales are Overall Decreasing in US, UK, and Worldwide") + 
   guides(color=guide_legend(title="Artist")) +
   theme(plot.title = element_text(family = "Segoe UI Black", size = 12), 
         axis.title.x = element_text(family = "Segoe UI Semibold", size = 11), 
@@ -102,7 +102,7 @@ ggplot(sales_1a, aes(x = released, y = sales, color = artist)) + geom_point() + 
         strip.background = element_rect(fill = "#dec3a4"))
 
 ggplot(sales_1a, aes(x = released, y = sales, color = artist)) + geom_point() + facet_grid(vars(country)) + xlab("Release Date") +
-  ylab("Sales (in millions)") + labs(title = "Taylor Swift and Beyoncé's Album Sales by Release Date, sorted by Country", subtitle = "Albums Sales Overall Decreasing in US, UK, and Worldwide") + 
+  ylab("Sales (in millions)") + labs(title = "Taylor Swift and Beyoncé's Album Sales by Release Date, sorted by Country", subtitle = "Fixed Scale Axes Show the Most Dramatic Decreases in Sales in the Worldwide Category") + 
   guides(color=guide_legend(title="Artist")) +
   theme(plot.title = element_text(family = "Segoe UI Black", size = 12), 
         axis.title.x = element_text(family = "Segoe UI Semibold", size = 11), 
@@ -154,7 +154,7 @@ b_freq_words <- b_words %>% anti_join(stop_words) %>% count(word, sort = TRUE) %
 b_freq_words
 
 ggplot(b_freq_words, aes(x = n, y = fct_reorder(word, n), fill = sentiment)) + geom_bar(stat="identity") +
-  xlab("Frequency of Word (Count)") + ylab("Word") + labs(title = "25 Most Frequently Used Words in Beyoncé's Songs and their Frequencies,\nColored by Sentiment", subtitle = "Beyoncé's most frequently used word is love, but she uses a mix of positive and negative words") +
+  xlab("Frequency of Word (Count)") + ylab("Word") + labs(title = "25 Most Frequently Used Words in Beyoncé's Songs and their Frequencies, ,\nColored by Sentiment", subtitle = "Beyoncé's most frequently used word is love, but she uses a mix of positive and\nnegative words") +
   guides(fill=guide_legend(title="Sentiment")) +
   theme(plot.title = element_text(family = "Segoe UI Black", size = 12), 
         axis.title.x = element_text(family = "Segoe UI Semibold", size = 11), 
@@ -176,7 +176,7 @@ ts_freq_word <- ts_words %>% anti_join(stop_words) %>% count(word, sort = TRUE) 
 ts_freq_word
 
 ggplot(ts_freq_word, aes(x = n, y = fct_reorder(word, n), fill = sentiment)) + geom_bar(stat="identity") +
-  xlab("Frequency of Word (Count)") + ylab("Word") + labs(title = "25 Most Frequently Used Words in Taylor Swift's Songs and their Frequencies,\nColored by Sentiment", subtitle = "Taylor Swift's most frequently used word is love, but she uses more negative than positive words") +
+  xlab("Frequency of Word (Count)") + ylab("Word") + labs(title = "25 Most Frequently Used Words in Taylor Swift's Songs and their \nFrequencies, Colored by Sentiment", subtitle = "Taylor Swift's most frequently used word is love, but she uses more negative than positive\nwords") +
   guides(fill=guide_legend(title="Sentiment")) +
   theme(plot.title = element_text(family = "Segoe UI Black", size = 12), 
         axis.title.x = element_text(family = "Segoe UI Semibold", size = 11), 
@@ -194,13 +194,33 @@ ts_freq_word %>% with(wordcloud(word, n))
 
 ### part e)
 ```{r part2e}
+ts_words_2e <- ts_lyrics %>% unnest_tokens(output = word, input = Lyrics, token = "words")
 
+ts_word_sentiment <- ts_words_2e %>% anti_join(stop_words) %>% group_by(Album) %>% count(word) %>% inner_join(get_sentiments("afinn")) %>% summarise(average_sentiment = mean(value))
+ts_word_sentiment$Album[ts_word_sentiment$Album == "reputation"] <- "Reputation"
+ts_word_sentiment
 
+sales_1a_us <- sales_1a %>% filter(country == "US") %>% rename(Album = title)
 
+joined_sales_sentiment <- inner_join(ts_word_sentiment, sales_1a_us)
+
+joined_sales_sentiment
+
+ggplot(joined_sales_sentiment, aes(x = released, y = average_sentiment, color = Album)) + geom_point(aes(size = sales)) + geom_hline(yintercept = 0) + xlab("Date of Album Release") + ylab("Average Word Sentiment in Album") + labs(title = "Average Sentiment of Taylor Swift's Albums Over Time, Sized by Album Sales", subtitle = "Taylor Swift's albums have become more negative over time, with a slight positive increase \nsince 2015", size = "Sales (in millions)") +
+  guides(fill=guide_legend(title="Sales (in millions)")) + scale_size_continuous(limits = c(floor(min(joined_sales_sentiment$sales)), ceiling(max(joined_sales_sentiment$sales))), breaks = c(1, 2, 3, 4, 5, 6, 7)) +
+  theme(plot.title = element_text(family = "Segoe UI Black", size = 12), 
+        axis.title.x = element_text(family = "Segoe UI Semibold", size = 11), 
+        axis.title.y = element_text(family = "Segoe UI Semibold", size = 11), 
+        axis.text.x = element_text(family = "Segoe UI Semilight", size = 10), 
+        axis.text.y = element_text(family = "Segoe UI Semilight", size = 10), 
+        plot.subtitle = element_text(family = "Segoe UI Semilight"), 
+        panel.background = element_rect(fill = "#faf1e5"),
+        legend.text = element_text(family = "Segoe UI Semilight", size = 10),
+        legend.title = element_text(family = "Segoe UI Semibold", size = 11))
 
 ```
 
-
+Overall, over time, Taylor Swift's albums have become more negative in sentiment. Her first two albums were slightly positive in sentiment, with the rest of her albums having negative sentiment. In recent years (since her most negative album, 1989, in 2015), her albums have become slightly more positive, but they are still overall negative in sentiment.
 
 
 
